@@ -21,12 +21,30 @@ from runner.koan import *
 class Proxy:
     def __init__(self, target_object):
         # WRITE CODE HERE
-
+        self._history = {}
         #initialize '_obj' attribute last. Trust me on this!
         self._obj = target_object
 
     # WRITE CODE HERE
+    def __getitem__(self, attribute, value):
+        self._history[attribute] = self._history.get(attribute, 0) + 1
+        return 0
+        
+    #     obj = self._obj
+    #     object.__setattr__(obj, attribute, value)
 
+    def __getattr__(self, attribute):
+        self._history[attribute] = self._history.get(attribute, 0) + 1
+        return object.__getattribute__(self._obj, attribute)
+
+    def was_called(self, attribute):
+      return attribute in self._history
+
+    def number_of_times_called(self, attribute):
+      return self._history.get(attribute, 0)
+
+    def messages(self):
+        return list(self._history.keys())
 # The proxy object should pass the following Koan:
 #
 class AboutProxyObjectProject(Koan):
